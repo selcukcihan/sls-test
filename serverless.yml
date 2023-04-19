@@ -1,0 +1,36 @@
+service: aws-lambda-serverless-sdk-python
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.9
+  architecture: arm64
+  memorySize: 1024
+  stage: dev
+  region: us-east-1
+
+  environment:
+    SLS_SDK_DEBUG: "1"
+    AWS_LAMBDA_EXEC_WRAPPER: "/opt/sls-sdk-python/exec_wrapper.py"
+    SLS_ORG_ID: ${env:SLS_ORG_ID}
+    SLS_DEV_MODE_ORG_ID: ${env:SLS_ORG_ID}
+    SLS_DEV_TOKEN: ${env:SLS_DEV_TOKEN}
+  layers:
+    - arn:aws:lambda:us-east-1:177335420605:layer:sls-sdk-python-v0-1-17:1
+    - arn:aws:lambda:us-east-1:177335420605:layer:sls-external-extension-arm64-v0-6-4:1
+  timeout: 15
+
+functions:
+  console:
+    handler: console.handler
+    vpc:
+      securityGroupIds:
+        - sg-024cfdaf887a268ad
+      subnetIds:
+        - subnet-0496e0cc2290e3320
+
+package:
+  patterns:
+    - '!node_modules/**'
+    - '!.venv/**'
